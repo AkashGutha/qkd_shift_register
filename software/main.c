@@ -34,7 +34,7 @@ int main(int argc, char const *argv[])
 {
     // file descriptor
     int fd;
-    // unsigned int i = 0;
+    unsigned int i = 0;
 
     // get the file path from arguments and open the file
     if (argc != 2)
@@ -84,23 +84,29 @@ int main(int argc, char const *argv[])
 
     printf("Starting the write process...........................\r\n");
     shift_reg_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_BASE & (ULONG)HW_FPGA_AXI_MASK);
-    shift_reg_1_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_BASE & (ULONG)HW_FPGA_AXI_MASK);
-    fread(&buffer, 16 * sizeof(UINT32), 1, file);
+    shift_reg_1_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_1_BASE & (ULONG)HW_FPGA_AXI_MASK);
+    fread(&buffer, 1 * sizeof(UINT32), 1, file);
 
-    start = clock();
-    fread(&buffer, sizeof(UINT32), 1, file);
-    *((UP32)shift_reg_on_axi_base) = buffer;
-    end = clock();
+    for (i = 0; i < 100; i = i + 2)
+    {
+        printf("Write time for %dth byte transfer: ", i);
+        start = clock();
+        fseek(file, (i) * sizeof(UINT32), 0);
+        fread(&buffer, sizeof(UINT32), 1, file);
+        *((UP32)shift_reg_on_axi_base) = buffer;
+        end = clock();
 
-    printf("%f \r\n", ((double)(end - start)));
+        printf("%.0f cycles \r\n", ((double)(end - start)));
 
-    start = clock();
-    fseek(file, 2, 0);
-    fread(&buffer, sizeof(UINT32), 1, file);
-    *((UP32)shift_reg_1_on_axi_base) = buffer;
-    end = clock();
+        printf("Write time for %dth byte transfer: ", i+1);
+        start = clock();
+        fseek(file, (i + 1) * sizeof(UINT32), 0);
+        fread(&buffer, sizeof(UINT32), 1, file);
+        *((UP32)shift_reg_1_on_axi_base) = buffer;
+        end = clock();
 
-    printf("%f \r\n", ((double)(end - start)));
+        printf("%.0f cycles \r\n", ((double)(end - start)));
+    }
 
     // printf("Completed writing data to the ram \r\n");
     // printf("Reading data from the ram : \r\n");
