@@ -46,24 +46,19 @@
          type = "String";
       }
    }
-   element shift_reg_mm_1
+   element soc_system
    {
-      datum _sortIndex
+      datum _originalDeviceFamily
       {
-         value = "3";
-         type = "int";
+         value = "Cyclone V";
+         type = "String";
       }
    }
-   element shift_reg_mm_1.avalon_slave_0
+   element soc_system
    {
-      datum _lockedAddress
+      datum _originalDeviceFamily
       {
-         value = "1";
-         type = "boolean";
-      }
-      datum baseAddress
-      {
-         value = "4";
+         value = "Cyclone V";
          type = "String";
       }
    }
@@ -91,11 +86,6 @@
  <interface name="clk" internal="clock.clk_in" type="clock" dir="end" />
  <interface name="memory" internal="hps.memory" type="conduit" dir="end" />
  <interface name="reset" internal="clock.clk_in_reset" type="reset" dir="end" />
- <interface
-   name="shift_reg_mm_1_output"
-   internal="shift_reg_mm_1.output"
-   type="conduit"
-   dir="end" />
  <interface
    name="shift_reg_mm_output"
    internal="shift_reg_mm.output"
@@ -637,8 +627,9 @@
   <parameter name="usb_mp_clk_div" value="0" />
   <parameter name="use_default_mpu_clk" value="true" />
  </module>
- <module name="shift_reg_mm" kind="shift_reg_mm" version="1.0" enabled="1" />
- <module name="shift_reg_mm_1" kind="shift_reg_mm" version="1.0" enabled="1" />
+ <module name="shift_reg_mm" kind="shift_reg_mm" version="1.0" enabled="1">
+  <parameter name="datawidth" value="64" />
+ </module>
  <connection
    kind="avalon"
    version="18.1"
@@ -649,24 +640,10 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
-   kind="avalon"
-   version="18.1"
-   start="hps.h2f_axi_master"
-   end="shift_reg_mm_1.avalon_slave_0">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0004" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
    kind="clock"
    version="18.1"
    start="clock.clk"
    end="shift_reg_mm.clock" />
- <connection
-   kind="clock"
-   version="18.1"
-   start="clock.clk"
-   end="shift_reg_mm_1.clock" />
  <connection kind="clock" version="18.1" start="clock.clk" end="hps.f2h_axi_clock" />
  <connection
    kind="clock"
@@ -684,11 +661,6 @@
    version="18.1"
    start="clock.clk_reset"
    end="shift_reg_mm.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clock.clk_reset"
-   end="shift_reg_mm_1.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

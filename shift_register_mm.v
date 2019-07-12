@@ -4,14 +4,16 @@ module shift_register_mm(
     out
 );
 
+parameter datawidth = 64;
+
 input clk, reset, write;
-input [31:0] writedata;
+input [datawidth-1:0] writedata;
 output out;
 
 wire shiftin_int = 1'b0;
 
 shift_register u0(
-    .clock(clk),
+	.clock(clk),
 	.data(writedata),
 	.load(write),
 	.shiftin(shiftin_int),

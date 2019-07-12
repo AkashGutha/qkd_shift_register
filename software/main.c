@@ -19,8 +19,8 @@ void *h2p_lw_axi_vbase;
 void *h2p_hw_axi_vbase;
 
 // pointers for shift registers
-void *shift_reg_on_axi_base;
 void *shift_reg_1_on_axi_base;
+void *shift_reg_2_on_axi_base;
 
 // time variables
 clock_t start, end;
@@ -83,37 +83,27 @@ int main(int argc, char const *argv[])
     //-------------------------------------------------------------
 
     printf("Starting the write process...........................\r\n");
-    shift_reg_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_BASE & (ULONG)HW_FPGA_AXI_MASK);
-    shift_reg_1_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_1_BASE & (ULONG)HW_FPGA_AXI_MASK);
-    fread(&buffer, 1 * sizeof(UINT32), 1, file);
-
-    for (i = 0; i < 100; i = i + 2)
+    shift_reg_1_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_BASE & (ULONG)HW_FPGA_AXI_MASK);
+    shift_reg_2_on_axi_base = h2p_hw_axi_vbase + ((ULONG)SHIFT_REG_MM_1_BASE & (ULONG)HW_FPGA_AXI_MASK);
+    unsigned int index = -1;
+    while (fgets(buffer, sizeof(buffer), file) != NULL)
     {
-        printf("Write time for %dth byte transfer: ", i);
-        start = clock();
-        fseek(file, (i) * sizeof(UINT32), 0);
-        fread(&buffer, sizeof(UINT32), 1, file);
-        *((UP32)shift_reg_on_axi_base) = buffer;
-        end = clock();
+        index++;
+        for (i = 0; i < sizeof(buffer); i++)
+        {
+            // start = clock();
+            *((UP32)shift_reg_1_on_axi_base) = buffer[i];
+            // *((UP32)shift_reg_2_on_axi_base) = buffer[i + 1];
+            // end = clock();
 
-        printf("%.0f cycles \r\n", ((double)(end - start)));
-
-        printf("Write time for %dth byte transfer: ", i+1);
-        start = clock();
-        fseek(file, (i + 1) * sizeof(UINT32), 0);
-        fread(&buffer, sizeof(UINT32), 1, file);
-        *((UP32)shift_reg_1_on_axi_base) = buffer;
-        end = clock();
-
-        printf("%.0f cycles \r\n", ((double)(end - start)));
+            // double a = ((double)(end - start));
+            // if (a > 20)
+            // {
+            //     printf("Write time for %dth byte transfer: ", i + (index * 256));
+            //     printf("%.0f cycles \r\n", a);
+            // }
+        }
     }
-
-    // printf("Completed writing data to the ram \r\n");
-    // printf("Reading data from the ram : \r\n");
-    // for (i = 0; i < 256; i++)
-    // {
-    //     printf("%u => %zu \r\n", i, *((UP32)shift_reg_on_axi_base + i));
-    // }
 
     //-------------------------------------------------------------
     // clean up our memory mapping and exit
@@ -129,4 +119,19 @@ int main(int argc, char const *argv[])
     close(fd);
 
     return 0;
+}
+
+long GetFileSize(const char *filename)
+{
+    long size;
+    FILE *f;
+
+    f = fopen(filename, "rb");
+    if (f == NULL)
+        return -1;
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    fclose(f);
+
+    return size;
 }

@@ -8,7 +8,7 @@
   </columns>
  </systemtable>
  <library expandedCategories="Project,Library" />
- <window width="1456" height="916" x="-8" y="-8" />
- <generation path="soc_system" />
+ <window width="1440" height="900" x="0" y="0" />
+ <generation path="_PROJECT_NAME_" />
  <hdlexample language="VERILOG" />
 </preferences>

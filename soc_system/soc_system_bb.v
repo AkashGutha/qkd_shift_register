@@ -18,8 +18,7 @@ module soc_system (
 	memory_mem_dm,
 	memory_oct_rzqin,
 	reset_reset_n,
-	shift_reg_mm_output_writeresponsevalid_n,
-	shift_reg_mm_1_output_writeresponsevalid_n);	
+	shift_reg_mm_output_output);	
 
 	input		clk_clk;
 	output	[14:0]	memory_mem_a;
@@ -39,6 +38,5 @@ module soc_system (
 	output	[3:0]	memory_mem_dm;
 	input		memory_oct_rzqin;
 	input		reset_reset_n;
-	output		shift_reg_mm_output_writeresponsevalid_n;
-	output		shift_reg_mm_1_output_writeresponsevalid_n;
+	output		shift_reg_mm_output_output;
 endmodule
